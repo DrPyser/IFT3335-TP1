@@ -1,13 +1,19 @@
 class Sudoku:
     
-    def __init__(self, line=None):
+    def __init__(self, line):
         self.sudoku = []
-        if line is None:
-            for _ in range(9):
-                self.sudoku.append(9*[0])
-        else:
-            for i in range(9):
-                self.sudoku.append(list(map(int, list(line[9*i:9*i+9]))))  
+        self.fixed = []
+        line = list(map(int, line.strip()))
+        if len(line) != 81:
+            raise ValueError('Must be exactly 81 characters')
+        line_number = []
+        for (i, n) in enumerate(line):
+            line_number.append(n)
+            if n != 0:
+                self.fixed.append((int(i/9), i % 9))
+            if ((i + 1) % 9) == 0:
+                self.sudoku.append(line_number)
+                line_number = []
             
     def get_line(self, l):
         return self.sudoku[l]
