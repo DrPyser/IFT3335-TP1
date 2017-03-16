@@ -329,10 +329,9 @@ def hill_climbing(problem):
     """From the initial node, keep choosing the neighbor with highest value,
     stopping when no neighbor is better. [Figure 4.2]"""
     current = Node(problem.initial)
-    count = 0
+    count = 1
     while True:
         neighbors = current.expand(problem)
-        count += len(neighbors)
         if not neighbors:
             break
         neighbor = argmax_random_tie(neighbors,
@@ -340,6 +339,7 @@ def hill_climbing(problem):
         if problem.value(neighbor.state) <= problem.value(current.state):
             break
         current = neighbor
+        count += 1
     return (current.state, count)
 
 
@@ -351,19 +351,21 @@ def exp_schedule(k=20, lam=0.005, limit=100):
 def simulated_annealing(problem, schedule=exp_schedule()):
     "[Figure 4.5]"
     current = Node(problem.initial)
-    count = 0
+    count = 1
     for t in range(sys.maxsize):
+        if problem.goal_test(current.state):
+            return (current.state, count)
         T = schedule(t)
         if T == 0:
-            return (current, count)
+            return (current.state, count)
         neighbors = current.expand(problem)
-        count += len(neighbors)
         if not neighbors:
             return (current, count)
         next = random.choice(neighbors)
         delta_e = problem.value(next.state) - problem.value(current.state)
         if delta_e > 0 or probability(math.exp(delta_e / T)):
             current = next
+            count += 1
 
 
 
