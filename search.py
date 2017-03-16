@@ -21,6 +21,28 @@ infinity = float('inf')
 
 # ______________________________________________________________________________
 
+# class Observable(object):
+#     def __init__(self, func, instance=None, observers=None):
+#         if observers is None:
+#             observers = []
+#             self.func = func
+#             self.instance = instance
+#             self.observers = observers
+#      def __get__(self, obj, cls=None):
+#          if obj is None:
+#          	return self
+#          else:
+#              func = self.func.__get__(obj, cls)
+#          	return Observable(func, obj, self.observers)
+#      def __call__(self, *args, **kwargs):
+#          result = self.func(*args, **kwargs)
+#          for observer in self.observers:
+#              observer(self.instance)
+#          return result
+#      def add_callback(self, callback):
+#          self.observers.append(callback)
+
+# ______________________________________________________________________________
 
 class Problem(object):
 
@@ -74,7 +96,7 @@ class Problem(object):
 # ______________________________________________________________________________
 
 
-class Node:
+class Node():
 
     """A node in a search tree. Contains a pointer to the parent (the node
     that this is a successor of) and to the actual state for this node. Note
@@ -101,6 +123,7 @@ class Node:
     def __lt__(self, node):
         return self.state < node.state
 
+    # @Obervable
     def expand(self, problem):
         "List the nodes reachable in one step from this node."
         return [self.child_node(problem, action)
@@ -157,21 +180,21 @@ def tree_search(problem, frontier):
     return (None, count)
 
 
-def graph_search(problem, frontier):
-    """Search through the successors of a problem to find a goal.
-    The argument frontier should be an empty queue.
-    If two paths reach a state, only use the first one. [Figure 3.7]"""
-    frontier.append(Node(problem.initial))
-    explored = set()
-    while frontier:
-        node = frontier.pop()
-        if problem.goal_test(node.state):
-            return node
-        explored.add(node.state)
-        frontier.extend(child for child in node.expand(problem)
-                        if child.state not in explored and
-                        child not in frontier)
-    return None
+# def graph_search(problem, frontier):
+#     """Search through the successors of a problem to find a goal.
+#     The argument frontier should be an empty queue.
+#     If two paths reach a state, only use the first one. [Figure 3.7]"""
+#     frontier.append(Node(problem.initial))
+#     explored = set()
+#     while frontier:
+#         node = frontier.pop()
+#         if problem.goal_test(node.state):
+#             return node
+#         explored.add(node.state)
+#         frontier.extend(child for child in node.expand(problem)
+#                         if child.state not in explored and
+#                         child not in frontier)
+#     return None
 
 
 def breadth_first_tree_search(problem):
@@ -184,28 +207,28 @@ def depth_first_tree_search(problem):
     return tree_search(problem, Stack())
 
 
-def depth_first_graph_search(problem):
-    "Search the deepest nodes in the search tree first."
-    return graph_search(problem, Stack())
+# def depth_first_graph_search(problem):
+#     "Search the deepest nodes in the search tree first."
+#     return graph_search(problem, Stack())
 
 
-def breadth_first_search(problem):
-    "[Figure 3.11]"
-    node = Node(problem.initial)
-    if problem.goal_test(node.state):
-        return node
-    frontier = FIFOQueue()
-    frontier.append(node)
-    explored = set()
-    while frontier:
-        node = frontier.pop()
-        explored.add(node.state)
-        for child in node.expand(problem):
-            if child.state not in explored and child not in frontier:
-                if problem.goal_test(child.state):
-                    return child
-                frontier.append(child)
-    return None
+# def breadth_first_search(problem):
+#     "[Figure 3.11]"
+#     node = Node(problem.initial)
+#     if problem.goal_test(node.state):
+#         return node
+#     frontier = FIFOQueue()
+#     frontier.append(node)
+#     explored = set()
+#     while frontier:
+#         node = frontier.pop()
+#         explored.add(node.state)
+#         for child in node.expand(problem):
+#             if child.state not in explored and child not in frontier:
+#                 if problem.goal_test(child.state):
+#                     return child
+#                 frontier.append(child)
+#     return None
 
 
 def best_first_graph_search(problem, f):
@@ -246,33 +269,33 @@ def uniform_cost_search(problem):
     return best_first_graph_search(problem, lambda node: node.path_cost)
 
 
-def depth_limited_search(problem, limit=50):
-    "[Figure 3.17]"
-    def recursive_dls(node, problem, limit):
-        if problem.goal_test(node.state):
-            return node
-        elif limit == 0:
-            return 'cutoff'
-        else:
-            cutoff_occurred = False
-            for child in node.expand(problem):
-                result = recursive_dls(child, problem, limit - 1)
-                if result == 'cutoff':
-                    cutoff_occurred = True
-                elif result is not None:
-                    return result
-            return 'cutoff' if cutoff_occurred else None
+# def depth_limited_search(problem, limit=50):
+#     "[Figure 3.17]"
+#     def recursive_dls(node, problem, limit):
+#         if problem.goal_test(node.state):
+#             return node
+#         elif limit == 0:
+#             return 'cutoff'
+#         else:
+#             cutoff_occurred = False
+#             for child in node.expand(problem):
+#                 result = recursive_dls(child, problem, limit - 1)
+#                 if result == 'cutoff':
+#                     cutoff_occurred = True
+#                 elif result is not None:
+#                     return result
+#             return 'cutoff' if cutoff_occurred else None
 
-    # Body of depth_limited_search:
-    return recursive_dls(Node(problem.initial), problem, limit)
+#     # Body of depth_limited_search:
+#     return recursive_dls(Node(problem.initial), problem, limit)
 
 
-def iterative_deepening_search(problem):
-    "[Figure 3.18]"
-    for depth in range(sys.maxsize):
-        result = depth_limited_search(problem, depth)
-        if result != 'cutoff':
-            return result
+# def iterative_deepening_search(problem):
+#     "[Figure 3.18]"
+#     for depth in range(sys.maxsize):
+#         result = depth_limited_search(problem, depth)
+#         if result != 'cutoff':
+#             return result
 
 # ______________________________________________________________________________
 # Informed (Heuristic) Search
