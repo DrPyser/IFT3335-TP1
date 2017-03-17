@@ -546,7 +546,6 @@ def Stack():
 
 
 class FIFOQueue(Queue):
-
     """A First-In-First-Out Queue."""
 
     def __init__(self):
@@ -587,7 +586,8 @@ class PriorityQueue(Queue):
         self.f = f
 
     def append(self, item):
-        bisect.insort(self.A, (self.f(item), item))
+        pair = (self.f(item), item)
+        bisect.insort(self.A, tuple(pair))
 
     def __len__(self):
         return len(self.A)
@@ -607,7 +607,7 @@ class PriorityQueue(Queue):
                 return item
 
     def __delitem__(self, key):
-        for i, (value, item) in enumerate(self.A):
+        for i, (_, item) in enumerate(self.A):
             if item == key:
                 self.A.pop(i)
 
