@@ -28,7 +28,7 @@ class SudokuProblem(Problem):
                 and all(map(test, state.iter_columns()))
                 and all(map(test, state.iter_blocks())))
 
-class LewisSudokuProblem(search.Problem):
+class LewisSudokuProblem(Problem):
 
     def __init__(self, initial_sudoku, goal=None):
         self.goal = None
