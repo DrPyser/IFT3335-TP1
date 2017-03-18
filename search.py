@@ -250,7 +250,7 @@ def best_first_graph_search(problem, f):
     node = Node(problem.initial)
     if problem.goal_test(node.state):
         return node
-    frontier = queue.PriorityQueue(min, f)
+    frontier = PriorityQueue(min, f)
     frontier.append(node)
     explored = set()
     while frontier:
@@ -283,14 +283,38 @@ def best_first_tree_search(problem, f):
         return node
     frontier = PriorityQueue(min, f)
     frontier.append(node)
-    while frontier:
+    while frontier:        
         node = frontier.pop()
         if problem.goal_test(node.state):
             return node
         for child in node.expand(problem):            
             if child not in frontier:
                 frontier.append(child)
-    return None
+    return node
+
+def best_first_greedy_tree_search(problem, f):
+    """Search the nodes with the lowest f scores first.
+    You specify the function f(node) that you want to minimize; for example,
+    if f is a heuristic estimate to the goal, then we have greedy best
+    first search; if f is node.depth then we have breadth-first search.
+    There is a subtlety: the line "f = memoize(f, 'f')" means that the f
+    values will be cached on the nodes as they are computed. So after doing
+    a best first search you can examine the f values of the path returned."""
+    f = memoize(f, 'f')
+    node = Node(problem.initial)
+    if problem.goal_test(node.state):
+        return node
+    frontier = PriorityQueue(min, f)
+    frontier.append(node)
+    while frontier:        
+        node = frontier.pop()
+        frontier = PriorityQueue(min, f)
+        if problem.goal_test(node.state):
+            return node
+        for child in node.expand(problem):            
+            if child not in frontier:
+                frontier.append(child)
+    return node
 
 
 def uniform_cost_search(problem):
@@ -389,7 +413,7 @@ def hill_climbing(problem):
         if problem.value(neighbor.state) <= problem.value(current.state):
             break
         current = neighbor
-    return current.state
+    return current
 
 
 def exp_schedule(k=20, lam=0.005, limit=100):
@@ -1156,7 +1180,7 @@ class InstrumentedProblem(Problem):
         return getattr(self.problem, attr)
 
     def __repr__(self):
-        return '<{:4d}/{:4d}/{:4d}/{}>'.format(self.succs, self.goal_tests,
+        return '<succs: {:4d}/goal tests:{:4d}/states: {:4d}/{}>'.format(self.succs, self.goal_tests,
                                      self.states, str(self.found)[:4])
 
 

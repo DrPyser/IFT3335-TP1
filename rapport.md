@@ -4,7 +4,6 @@ author:
     - Yan Coutu
 date: 17 mars 2017
 title: Rapport: TP1 IFT3335
-
 ---
 
 # Modélisation du problème
@@ -39,8 +38,8 @@ sont aussi présents dans cette classe.
 La formulation du problème, incluant la définition d'un état initial, d'un état but, des actions possibles dépend de 
 l'algorithme utilisé.
 En particulier, il existe deux formulations différentes du problème, une utilisée pour les algorithmes profondeur d'abord
-et meilleur d'abord vorace à retour arrière(voir [SudokuProblem](problem1.py)), et l'autre utilisée pour 
-les algorithmes de type "Hill Climbing" et recuit simulé(voir [ProblemyMcProblemFace](problem2.py)). 
+et meilleur d'abord vorace(voir [SudokuProblem](problem1.py)), et l'autre utilisée pour 
+les algorithmes de type "Hill Climbing" et recuit simulé(voir [`LewisSudokuProblem`](problem2.py)). 
 
 Pour la première formulation, l'état initiale correspond à une grille de jeu(instance de la classe `Sudoku`) partiellement remplis
 (i.e. avec certaines cases ayant la valeur 0). Les valeurs données initialement sont considérées comme fixe pour cet état et tous les états
@@ -62,6 +61,11 @@ Il est assumé que l'action est effectivement une action valide pour cet état,
 tel qu'elle serait générée par un appel de `actions` sur cet état.
 La méthode `goal_test` vérifie si l'état en paramètre constitue un état final et une solution au Sudoku, c'est-à-dire
 que la grille de jeu est remplis et que chaque case contient une valeur entre 1 et 9 unique dans sa ligne, colonne et bloc.
+
+Pour la deuxième formulation(inspirée de l'article de Lewis), l'état initiale est une configuration pleine(ou chaque case à une valeur entre 1 et 9)
+tel que chaque bloc contient tous les chiffres de 1 à 9. Un sous-ensemble des cases sont considérée comme fixe et ne seront pas touchée lors de la recherche. Un état but correspond à une grille de jeu qui réponds aux contraintes d'une solution d'un sudoku, ou de manière équivalente, une grille de jeu ayant une valeur de 0 dans cette formulation.
+La valeur d'un état est calculée en comptant le nombre de valeurs manquantes pour chaque ligne et colonne.
+
 
 
 

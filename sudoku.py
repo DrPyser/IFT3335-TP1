@@ -1,4 +1,4 @@
-from copy import deepcopy
+import copy
 import operator
 from functools import reduce
 
@@ -20,7 +20,6 @@ class Sudoku:
             
     def get_line(self, l):
         return self.sudoku[l]
-
                
     def get_column(self, c):
         column = []
@@ -45,7 +44,7 @@ class Sudoku:
         return self.sudoku[i][j]
     
     def set(self, i, j, x):
-        new = deepcopy(self)
+        new = copy.deepcopy(self)
         new.sudoku[i][j] = x
         return new
 
@@ -59,8 +58,14 @@ class Sudoku:
 
     def iter_blocks(self):
         for b in range(9):
-            yield [self.sudoku[i][j] for i in range(b//3*3,b//3*3+3) for j in range(b*3, b*3+3)]
+            yield [self.sudoku[i][j] for i in range(b//3*3,b//3*3+3) for j in range(b*3%9, (b*3+3)//3)]    
 
+    def iter_empty_cell(self):
+        for i in range(9):
+            for j in range(9):
+                if self.get(i,j) == 0:
+                    yield (i,j)
+            
     def is_full(self):
         return 0 not in reduce(operator.add, self.sudoku)
 
@@ -70,7 +75,13 @@ class Sudoku:
             values = set(range(1,10)) - set(self.get_line(i)) - set(self.get_column(j)) - set(self.get_square(i,j))
             for x in values:
                 yield x
-        
+
+    def swap(self, i, j, l, k):
+        new = copy.deepcopy(self)
+        new.sudoku[i][j], new.sudoku[l][j] = new.sudoku[l][k], new.sudoku[i][j]
+        return new
+
+   
     def __str__(self):
         s = '+---------'*3 + '+\n'
         for i in range(9):
