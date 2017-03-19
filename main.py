@@ -24,7 +24,7 @@ if __name__ == '__main__':
     def h2(node):
         if node.action:
             (i,j,val) = node.action
-            possibilities = list(node.state.real_possible_values(i,j))
+            possibilities = list(node.state.possible_values(i,j))
 
             if len(possibilities) == 0:
                 return None
@@ -37,16 +37,16 @@ if __name__ == '__main__':
             return 0
 
 
-        def h3(node):
-            #count = 0
-            for (i,j) in node.state.iter_empty_cell():
-                if len(list(node.state.possibilities[(i, j)])) == 0:
-                    return None
-            if node.action:
-                (i,j,val) = node.action
-                possibilities = node.state.possibilities[(i, j)]
-                return len(possibilities) - 1
-            return 0
+    def h3(node):
+        #count = 0
+        for (i,j) in node.state.iter_empty_cell():
+            if len(list(node.state.possibilities[(i, j)])) == 0:
+                return None
+        if node.action:
+            (i,j,val) = node.action
+            possibilities = node.state.possibilities[(i, j)]
+            return len(possibilities) - 1
+        return 0
 
         
     choices = {
@@ -70,22 +70,23 @@ if __name__ == '__main__':
     #         print("Possibilities for (%d,%d): %s"%(i,j,list(sudoku.real_possible_values(i,j))))
 
             
-    print(sys.argv)
-    searchers = [choices[x] for x in sys.argv[1:]]
+#    print(sys.argv)
+    searchers = sys.argv[1:]
     lewisProblems = map(LewisSudokuProblem, sudokus)
     naiveProblems = map(SudokuProblem, sudokus)
-    for (i, (p1, p2)) in enumerate(zip(lewisProblems,naiveProblems)):
-        print("Problem,searcher,explored,states,tests,solution,value"
+    #csv header
+    print("Problem,searcher,explored,states,tests,solution,value")
+    for (i, (p1, p2)) in enumerate(zip(lewisProblems,naiveProblems)):        
         #print("Initial state:")        
         for s in searchers:
-            if s in [choices['hill_climbing'], choices['annealing']]:
+            if s in ['hill_climbing', 'annealing']:
                 ip = InstrumentedProblem(p1)
             else:
                 ip = InstrumentedProblem(p2)
 
             #print(ip.initial)
-            result = s(ip)
-            print("%d,%s,%d,%d,%s,%d"%(i,name(s),ip.succs,ip.states,ip.goal_tests,bool(result) and true_goal_test(result.state), ip.value(result.state))
+            result = choices[s](ip)
+            print("%d,%s,%d,%d,%d,%s,%d"%(i,s,ip.succs,ip.states,ip.goal_tests,bool(result) and true_goal_test(result.state), ip.value(result.state)))
             # if result:
             #     print("Stats: %s"%(ip))
             #     print("Result:\n %s"%(result.state))

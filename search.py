@@ -1165,8 +1165,8 @@ class InstrumentedProblem(Problem):
 
     def goal_test(self, state):
         self.goal_tests += 1
-        print("States tested: %d"%(self.goal_tests))
-        print(state)
+        # print("States tested: %d"%(self.goal_tests))
+        # print(state)
         result = self.problem.goal_test(state)
         if result:
             self.found = state

@@ -76,7 +76,7 @@ class LewisSudokuProblem(search.Problem):
     
     def goal_test(self, state):
         test = self.value(state) == 0
-        print("Goal!") if test else print("Goal test failed.")
+#        print("Goal!") if test else print("Goal test failed.")
         return test
     
     def value(self, state):
