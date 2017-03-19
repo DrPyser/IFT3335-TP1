@@ -17,6 +17,7 @@ class Sudoku:
             if ((i + 1) % 9) == 0:
                 self.sudoku.append(line_number)
                 line_number = []
+        self._generate_possibilities()
             
     def get_line(self, l):
         return self.sudoku[l]
@@ -75,13 +76,89 @@ class Sudoku:
             values = set(range(1,10)) - set(self.get_line(i)) - set(self.get_column(j)) - set(self.get_square(i,j))
             for x in values:
                 yield x
+                
+    def _generate_possibilities(self):
+        self.possibilities = dict()
+        # Naive possibilities (only consider square, row and column)
+        for i in range(9):
+            for j in range(9):
+                if self.sudoku[i][j] == 0:
+                    self.possibilities[(i, j)] = set(range(1,10)) - set(self.get_line(i)) - set(self.get_column(j)) - set(self.get_square(i,j))
+                    
+        # Hidden unique: find unique numbers in...
+        # Row
+        for r in range(9):
+            possib = set(range(1, 10)) - set(self.get_line(r))
+            if not possib:
+                continue
+            cases = []
+            for c in range(9):
+                if self.sudoku[r][c] == 0:
+                    cases.append((r, c))
+            for p in possib:
+                tmp = None
+                for case in cases:
+                    if p in self.possibilities[case]:
+                        if tmp is None: # First to have p as a possibility
+                            tmp = case
+                        else: # Not the first - make it None and stop looking for that possibility
+                            tmp = None
+                            break
+                if tmp is not None:
+                    self.possibilities[tmp] = set([p])
+        # Column
+        for c in range(9):
+            possib = set(range(1, 10)) - set(self.get_column(c))
+            if not possib:
+                continue
+            cases = []
+            for r in range(9):
+                if self.sudoku[r][c] == 0:
+                    cases.append((r, c))
+            for p in possib:
+                tmp = None
+                for case in cases:
+                    if p in self.possibilities[case]:
+                        if tmp is None: # First to have p as a possibility
+                            tmp = case
+                        else: # Not the first - make it None and stop looking for that possibility
+                            tmp = None
+                            break
+                if tmp is not None:
+                    self.possibilities[tmp] = set([p])
+        # Square
+        for rs in range(9, 3):
+            for cs in range(9, 3):
+                possib = set(range(1, 10)) - set(self.get_square(rs, cs))
+                if not possib:
+                    continue
+                cases = []
+                for r in range(rs, rs+3):
+                    for c in range(cs, cs+3):
+                        if self.sudoku[r][c] == 0:
+                            cases.append((r, c))
+                for p in possib:
+                    tmp = None
+                    for case in cases:
+                        if p in self.possibilities[case]:
+                            if tmp is None: # First to have p as a possibility
+                                tmp = case
+                            else: # Not the first - make it None and stop looking for that possibility
+                                tmp = None
+                                break
+                    if tmp is not None:
+                        self.possibilities[tmp] = set([p])
 
     def swap(self, i, j, l, k):
         new = copy.deepcopy(self)
-        new.sudoku[i][j], new.sudoku[l][j] = new.sudoku[l][k], new.sudoku[i][j]
+        new.sudoku[i][j], new.sudoku[l][k] = new.sudoku[l][k], new.sudoku[i][j]
         return new
 
-   
+    def __hash__(self):
+        s = ''
+        for l in self.sudoku:
+            s += ''.join(map(str, l))
+        return int(s)
     def __str__(self):
         s = '+---------'*3 + '+\n'
         for i in range(9):
@@ -101,6 +178,9 @@ class Sudoku:
 
     def __gt__(self, other):
         return id(self) > id(other)
+    
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
     
     # @static
     # def from_line(line):

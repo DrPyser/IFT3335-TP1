@@ -22,7 +22,6 @@ class SudokuProblem(search.Problem):
         return state.set(i,j,x)
 
     def goal_test(self, state):
-        print("Node tested: id %s"%(id(state)))
         test = lambda x: set(x) == set(range(1,10))#fonction de test
         return (state.is_full()
                 and all(map(test, state.iter_lines()))#vérification des lignes

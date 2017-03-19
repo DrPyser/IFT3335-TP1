@@ -3,7 +3,6 @@
 from search import (depth_first_tree_search, best_first_greedy_tree_search, best_first_tree_search, hill_climbing, simulated_annealing, compare_searchers, InstrumentedProblem)
 from problem import *
 from sudoku import Sudoku
-# from problem2 import *
 
 import sys
 
@@ -16,25 +15,21 @@ if __name__ == '__main__':
     def h1(node):
         if node.action:
             (i,j,val) = node.action
-            possibilities = (set(range(1,10)) - set(node.state.get_line(i)) - set(node.state.get_column(j))
-                         - set(node.state.get_square(i,j)))
+            possibilities = node.state.possibilities[(i, j)]
             return len(possibilities) - 1
         else:
             return 0
 
     def h2(node):
+        count = 0
+        for (i,j) in node.state.iter_empty_cell():
+            if len(list(node.state.possibilities[(i, j)])) == 0:
+                return search.infinity
         if node.action:
             (i,j,val) = node.action
-            possibilities = (set(range(1,10)) - set(node.state.get_line(i)) - set(node.state.get_column(j))
-                             - set(node.state.get_square(i,j)))
-
-            for (i,j) in node.state.iter_empty_cell():
-                if len(list(node.state.possible_values(i,j))) == 0:
-                    return -search.infinity                
-            else:
-                return len(possibilities) - 1
-        else:
-            return 0
+            possibilities = node.state.possibilities[(i, j)]
+            return len(possibilities) - 1
+        return 0
         
     choices = {
         'depth_first': depth_first_tree_search,
