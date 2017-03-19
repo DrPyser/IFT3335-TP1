@@ -76,6 +76,8 @@ class Sudoku:
             values = set(range(1,10)) - set(self.get_line(i)) - set(self.get_column(j)) - set(self.get_square(i,j))
             for x in values:
                 yield x
+            if self.get(i,j) != 0:
+                yield self.get(i,j)
                 
     def _generate_possibilities(self):
         self.possibilities = dict()
@@ -154,11 +156,6 @@ class Sudoku:
         new.sudoku[i][j], new.sudoku[l][k] = new.sudoku[l][k], new.sudoku[i][j]
         return new
 
-    def __hash__(self):
-        s = ''
-        for l in self.sudoku:
-            s += ''.join(map(str, l))
-        return int(s)
     def __str__(self):
         s = '+---------'*3 + '+\n'
         for i in range(9):
@@ -178,6 +175,12 @@ class Sudoku:
 
     def __gt__(self, other):
         return id(self) > id(other)
+
+    def __eq__(self, other):
+        return (isinstance(other, type(self)) and self.sudoku == other.sudoku)
+
+    def __hash__(self):
+        return int("".join(map(str, reduce(lambda x, y:x+y, self.sudoku))))
     
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()

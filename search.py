@@ -259,11 +259,11 @@ def best_first_graph_search(problem, f):
             return node
         explored.add(node.state)
         for child in node.expand(problem):
-            if child.state not in explored and child not in frontier:
+            if child.state not in explored and child not in frontier and f(child):
                 frontier.append(child)
             elif child in frontier:
                 incumbent = frontier[child]
-                if f(child) < f(incumbent):
+                if f(child) and f(child) < f(incumbent):
                     del frontier[incumbent]
                     frontier.append(child)
     return None
@@ -288,7 +288,7 @@ def best_first_tree_search(problem, f):
         if problem.goal_test(node.state):
             return node
         for child in node.expand(problem):            
-            if child not in frontier:
+            if f(child):
                 frontier.append(child)
     return node
 
@@ -312,7 +312,7 @@ def best_first_greedy_tree_search(problem, f):
         if problem.goal_test(node.state):
             return node
         for child in node.expand(problem):            
-            if child not in frontier:
+            if child not in frontier and f(child):
                 frontier.append(child)
     return node
 
@@ -1159,12 +1159,14 @@ class InstrumentedProblem(Problem):
         self.succs += 1
         return self.problem.actions(state)
 
-    def result(self, state, action):
+    def result(self, state, action):        
         self.states += 1
         return self.problem.result(state, action)
 
     def goal_test(self, state):
         self.goal_tests += 1
+        print("States tested: %d"%(self.goal_tests))
+        print(state)
         result = self.problem.goal_test(state)
         if result:
             self.found = state

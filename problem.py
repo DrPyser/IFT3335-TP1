@@ -35,6 +35,7 @@ class SudokuProblem(search.Problem):
         for i in range(0, 9):
             s += len(one_to_nine - set(state.get_line(i)))
             s += len(one_to_nine - set(state.get_column(i)))
+            s += len(one_to_nine - set(state.get_square(i, (i*3)%9)))
         return -s
 
 
