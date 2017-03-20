@@ -45,8 +45,9 @@ class Sudoku:
         return self.sudoku[i][j]
     
     def set(self, i, j, x):
-        new = copy.deepcopy(self)
+        new = copy.deepcopy(self)        
         new.sudoku[i][j] = x
+        # new._generate_possibilities()
         return new
 
     def iter_lines(self):
