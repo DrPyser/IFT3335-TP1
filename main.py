@@ -22,22 +22,6 @@ if __name__ == '__main__':
             return 0
 
     def h2(node):
-        if node.action:
-            (i,j,val) = node.action
-            possibilities = list(node.state.possible_values(i,j))
-
-            if len(possibilities) == 0:
-                return None
-            for (i,j) in node.state.iter_empty_cell():
-                if len(list(node.state.possible_values(i,j))) == 0:
-                    return None
-            else:
-                return len(possibilities) - 1
-        else:
-            return 0
-
-
-    def h3(node):
         #count = 0
         for (i,j) in node.state.iter_empty_cell():
             if len(list(node.state.possibilities[(i, j)])) == 0:
@@ -64,20 +48,15 @@ if __name__ == '__main__':
         'annealing': lambda x: simulated_annealing(x, schedule=sim)
     }
 
-    # for sudoku in sudokus:
-    #     print(sudoku)
-    #     for (i,j) in sudoku.iter_empty_cell():
-    #         print("Possibilities for (%d,%d): %s"%(i,j,list(sudoku.real_possible_values(i,j))))
-
-            
 #    print(sys.argv)
     searchers = sys.argv[1:]
     lewisProblems = map(LewisSudokuProblem, sudokus)
     naiveProblems = map(SudokuProblem, sudokus)
     #csv header
-    print("Problem,searcher,explored,states,tests,solution,value")
+    print("problem,searcher,explored,states,tests,solution,value")
     for (i, (p1, p2)) in enumerate(zip(lewisProblems,naiveProblems)):        
         #print("Initial state:")        
+
         for s in searchers:
             if s in ['hill_climbing', 'annealing']:
                 ip = InstrumentedProblem(p1)
@@ -85,8 +64,12 @@ if __name__ == '__main__':
                 ip = InstrumentedProblem(p2)
 
             #print(ip.initial)
+            
             result = choices[s](ip)
-            print("%d,%s,%d,%d,%d,%s,%d"%(i,s,ip.succs,ip.states,ip.goal_tests,bool(result) and true_goal_test(result.state), ip.value(result.state)))
+            print("%d,%s,%d,%d,%d,%s,%s"%(i,s,ip.succs,ip.states,ip.goal_tests,
+                                          bool(result) and true_goal_test(result.state),
+                                          ip.value(result.state)) if result else "")
+
             # if result:
             #     print("Stats: %s"%(ip))
             #     print("Result:\n %s"%(result.state))
