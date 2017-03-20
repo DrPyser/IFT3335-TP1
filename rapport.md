@@ -10,7 +10,7 @@ title: Rapport: TP1 IFT3335
 ## État
 
 Un état est ici une certaine configuration d'une grille de Sudoku 9 par 9.
-Particulièrement, il s'agit d'une assignation d'un chiffre entre 0 et 9(inclusif) pour chaque case
+Particulièrement, il s'agit d'une assignation d'un chiffre entre 0 et 9 (inclusif) pour chaque case
 d'une matrice 9 par 9. 
 Le chiffre 0 représente les cases "vide", soit dont une valeur n'a pas encore été assignée.
 Pour les algorithmes de profondeur d'abord et de meilleur d'abord vorace, l'état peut effectivement contenir
@@ -64,9 +64,16 @@ que la grille de jeu est remplis et que chaque case contient une valeur entre 1 
 
 Pour la deuxième formulation(inspirée de l'article de Lewis), l'état initiale est une configuration pleine(ou chaque case à une valeur entre 1 et 9)
 tel que chaque bloc contient tous les chiffres de 1 à 9. Un sous-ensemble des cases sont considérée comme fixe et ne seront pas touchée lors de la recherche. Un état but correspond à une grille de jeu qui réponds aux contraintes d'une solution d'un sudoku, ou de manière équivalente, une grille de jeu ayant une valeur de 0 dans cette formulation.
-La valeur d'un état est calculée en comptant le nombre de valeurs manquantes pour chaque ligne et colonne.
+La valeur d'un état est calculée en comptant le nombre de valeurs manquantes pour chaque ligne et colonne. Une action consiste en une paire de cases telle que les deux cases se trouvent dans le même carré et ne sont pas des cases fixes, c'est-à-dire des cases du problème.
+La méthode `actions` d'une instance de la classe `SudokuProblem` appelé sur un état retourne une paire de paire représentant les deux paires à permuter.
+La méthode `goal_test` vérifie si la valeur de la grille est à 0, c'est-à-dire si aucun chiffre ne se répète dans chaque ligne et dans chaque colonne (par construction, tous les chiffres dans chaque carré est différent).
 
+# Analyse sur les 100 sudokus
 
+L'algorithme de recherche par profondeur est très inefficace. Un seul sudoku prend plusieurs heures pour terminer. En contrepartie, nous savons qu'il arrive à une solution éventuellement. Il n'y a donc évidemment aucun résultat pour la recherche par profondeur.
 
+L'algorithme best-first utilisé avec une heuristique priorisant les cases le moins de chiffres possibles en ne regardant que les cases remplies est aussi inefficace. Bien que le temps est, en théorie, meilleur, cela prend encore plusieurs heures pour arriver à une solution. Nous n'avons donc aucun résultat pour cet algorithme. Par contre, il aurait été possible d'améliorer l'heuristique en comptant le nombre de possibilités de manière plus exhaustive. Par exemple, en considérant les chiffres qui n'apparaissent qu'une fois dans une ligne, une colonne ou un carré, ou bien avec des techniques plus complexes : si l'union des chiffres possibles de n cases d'une ligne (ou d'une colonne ou d'un carré) est un ensemble de cardinal n, alors on peut éliminer ces possibilités dans les autres cases de la ligne (ou de la colonne ou du carré).
 
+Le Hill Climbing réussit à réduire le cout, mais n'est pas capable de trouver une solution finale valide. En effet, sur les 100 sudokus, aucun sudoku n'a été résolu. Le cout moyen est de 13.54 et l'algorithme parcourait en moyenne 17.22 noeuds avant d'arriver à la solution
 
+Pour le Recuit Simulé, la température suit une loi exponentielle, où la température initiale est de 80% et qui descend par un coefficient de 0.99 à chaque itération. Comme l'algorithme est très long, il a été décidé d'arrêter les itérations lorsque la température est descend en bas de 1%. Tout comme le Hill Climbing, il ne trouve pas de solution, mais donne de meilleures résultats, malgré un temps de calcul très long. En moyenne, le score s'approche de 10.58 et l'algorithme parcourt 437 noeuds. Notons que si on n'arrêtait pas l'algorithme prématurément, il est certain qu'il trouverait la solution, mais cela requiert beaucoup de temps de calcul.
