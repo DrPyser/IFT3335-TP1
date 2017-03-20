@@ -16,7 +16,7 @@ if __name__ == '__main__':
     def h1(node):
         if node.action:
             (i,j,val) = node.action
-            possibilities = node.state.possibilities[(i, j)]
+            possibilities = list(node.state.possible_values(i,j))
             return len(possibilities) - 1
         else:
             return 0
@@ -24,11 +24,11 @@ if __name__ == '__main__':
     def h2(node):
         #count = 0
         for (i,j) in node.state.iter_empty_cell():
-            if len(list(node.state.possibilities[(i, j)])) == 0:
+            if len(list(node.state.possible_values(i,j))) == 0:
                 return None
         if node.action:
             (i,j,val) = node.action
-            possibilities = node.state.possibilities[(i, j)]
+            possibilities = list(node.state.possible_values(i,j))
             return len(possibilities) - 1
         return 0
 
