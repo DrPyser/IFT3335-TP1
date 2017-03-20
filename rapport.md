@@ -3,7 +3,7 @@ author:
     - Charles Langlois
     - Yan Coutu
 date: 17 mars 2017
-title: Rapport: TP1 IFT3335
+title: Rapport TP1 IFT3335
 ---
 
 # Modélisation du problème
@@ -24,12 +24,12 @@ Concrètement, ce modèle d'état est implémenté dans le langage `Python` avec
 ("enveloppant") une liste de liste(attribut d'instance `sudoku`), 
 correspondant à une liste des lignes (chaque ligne contenant neuf chiffres entre 0 et 9)
 de la grille du Sudoku. 
-De plus, la classe contient une liste de pair d'entiers(attribut d'instance `fixed`) représentant la position dans la matrice d'une case
+De plus, la classe contient une liste de paires d'entiers (attribut d'instance `fixed`) représentant la position dans la matrice d'une case
 dont la valeur est fixe, c'est-à-dire inchangeable
-(i.e. une pair `(i,j)` indique la case d'une instance de cette classe `sudoku_instance.sudoku[i][j]`).
+(i.e. une paire `(i,j)` indique la case d'une instance de cette classe `sudoku_instance.sudoku[i][j]`).
 Les méthodes appropriées sont implémentées pour permettre un accès facile à une ligne,
-une colonne, une case ou un "bloc"(i.e. une sous-grille 3 par 3) de la grille. De plus, les méthodes appropriées pour vérifier
-si la grille est remplie(aucune valeurs 0), pour générer les valeurs possibles(respectant les contraintes) pour une case,
+une colonne, une case ou un carré (i.e. une sous-grille 3 par 3) de la grille. De plus, les méthodes appropriées pour vérifier
+si la grille est remplie (aucune valeur nulle), pour générer les valeurs possibles(respectant les contraintes) pour une case,
 pour générer un nouvelle état en modifiant la valeur d'une case et tout autre comportement utile dans l'implémentation utile des algorithmes
 sont aussi présents dans cette classe.
 
@@ -37,17 +37,16 @@ sont aussi présents dans cette classe.
 ## Problème
 La formulation du problème, incluant la définition d'un état initial, d'un état but, des actions possibles dépend de 
 l'algorithme utilisé.
-En particulier, il existe deux formulations différentes du problème, une utilisée pour les algorithmes profondeur d'abord
-et meilleur d'abord vorace(voir [SudokuProblem](problem1.py)), et l'autre utilisée pour 
-les algorithmes de type "Hill Climbing" et recuit simulé(voir [`LewisSudokuProblem`](problem2.py)). 
+En particulier, il existe deux formulations différentes du problème : une utilisée pour les algorithmes profondeur d'abord
+et meilleur d'abord vorace(voir [SudokuProblem](problem.py)), et l'autre utilisée pour 
+les algorithmes de type "Hill Climbing" et recuit simulé(voir [`LewisSudokuProblem`](problem.py)). 
 
-Pour la première formulation, l'état initiale correspond à une grille de jeu(instance de la classe `Sudoku`) partiellement remplis
-(i.e. avec certaines cases ayant la valeur 0). Les valeurs données initialement sont considérées comme fixe pour cet état et tous les états
+Pour la première formulation, l'état initiale correspond à une grille de jeu (instance de la classe `Sudoku`) partiellement remplie (i.e. avec certaines cases ayant la valeur 0). Les valeurs données initialement sont considérées comme fixes pour cet état et tous les états
 subséquents.
-Un état but correspond à une grille remplis, soit sans cases de valeur 0, et pour laquelle toutes les cases sont valides, 
-c'est-à-dire qu'elles respectent toutes les contraintes du jeu, soit que la valeur d'une case soit unique pour la ligne, la colonne et le bloc.
-La relation "successeur" associe à chaque état tous les états subséquents possibles(i.e. conservant la validité du jeu), 
-soit chaque état produite par l'assignation à une case vide d'une valeur entre 1 et 9 pas déjà présente dans la même rangée, colonne ou bloc.
+Un état but correspond à une grille remplie, soit sans case de valeur 0, et pour laquelle toutes les cases sont valides, 
+c'est-à-dire qu'elles respectent toutes les contraintes du jeu, soit que la valeur d'une case soit unique pour la ligne, la colonne et le carré.
+La relation "successeur" associe à chaque état tous les états subséquents possibles (i.e. conservant la validité du jeu), 
+soit chaque état produit par l'assignation à une case vide d'une valeur entre 1 et 9 qui n'est pas déjà présente dans la même ligne, colonne ou carré.
 Pour cette formulation du problème, on fait l'hypothèse d'un coût uniforme constant de 1 pour tout changement d'état.
 Pour implémenter cette formulation du problème, on défini les méthodes `actions`, `result` et `goal_test` dans la classe
 [`SudokuProblem`](problem.py) sous-classant la classe [`Problem`](search.py) de la librarie `aima-python`.
@@ -60,12 +59,12 @@ La méthode `result` interprète une telle action en retournant l'état génér�
 Il est assumé que l'action est effectivement une action valide pour cet état,
 tel qu'elle serait générée par un appel de `actions` sur cet état.
 La méthode `goal_test` vérifie si l'état en paramètre constitue un état final et une solution au Sudoku, c'est-à-dire
-que la grille de jeu est remplis et que chaque case contient une valeur entre 1 et 9 unique dans sa ligne, colonne et bloc.
+que la grille de jeu est remplis et que chaque case contient une valeur entre 1 et 9 unique dans sa ligne, colonne et carré.
 Finalement, la méthode `value` assigne une valeur à l'état, correspondant à la somme du nombre de chiffres manquants pour chaque colonne, 
-rangée ou bloc de la grille.
+ligne ou carré de la grille.
 
-Pour la deuxième formulation(inspirée de l'article de Lewis), l'état initiale est une configuration pleine(ou chaque case à une valeur entre 1 et 9)
-tel que chaque bloc contient tous les chiffres de 1 à 9. Un sous-ensemble des cases sont considérée comme fixe et ne seront pas touchée lors de la recherche. Un état but correspond à une grille de jeu qui réponds aux contraintes d'une solution d'un sudoku, ou de manière équivalente, une grille de jeu ayant une valeur de 0 dans cette formulation.
+Pour la deuxième formulation (inspirée de l'article de Lewis), l'état initiale est une configuration pleine (où chaque case a une valeur entre 1 et 9)
+telle que chaque carré contient tous les chiffres de 1 à 9. Un sous-ensemble des cases considérées comme fixes ne seront pas touchées lors de la recherche. Un état but correspond à une grille de jeu qui répond aux contraintes d'une solution d'un sudoku ou, de manière équivalente, une grille de jeu ayant une valeur de 0 dans cette formulation.
 La valeur d'un état est calculée en comptant le nombre de valeurs manquantes pour chaque ligne et colonne. Une action consiste en une paire de cases telle que les deux cases se trouvent dans le même carré et ne sont pas des cases fixes, c'est-à-dire des cases du problème.
 La méthode `actions` d'une instance de la classe `SudokuProblem` appelé sur un état retourne une paire de paire représentant les deux paires à permuter.
 La méthode `goal_test` vérifie si la valeur de la grille est à 0, c'est-à-dire si aucun chiffre ne se répète dans chaque ligne et dans chaque colonne (par construction, tous les chiffres dans chaque carré est différent).
@@ -76,8 +75,8 @@ Il y a trois heuristiques définies pour le meilleur d'abord: `h1`, `h2`, `h3`.
 Ainsi, les cases ayant peu de valeurs possibles vont être remplies en premier. 
 Ici, "valeur possible" signifie une valeur entre 1 et 9 pour une case tel que
 
-1. assigner cette valeur à cette case ne viole pas les contraintes du jeu(valeur unique pour la ligne, colonne et bloc).
-2. si une valeur ne peut être placer dans aucunes des autres cases de la colonne, rangée ou bloc sans violer les contraintes,
+1. assigner cette valeur à cette case ne viole pas les contraintes du jeu(valeur unique pour la ligne, colonne et carré).
+2. si une valeur ne peut être placer dans aucunes des autres cases de la colonne, ligne ou carré sans violer les contraintes,
    cette valeur est effectivement la seule valeur possible pour cette case.
    
 L'heuristique `h2` est un peu plus intelligente puisqu'elle regarde aussi les autres cases de la grille de ce noeud pour trouver
@@ -107,8 +106,9 @@ Le programme imprime sur la sortie standard des informations sur le résultat de
 # Analyse des algorithmes
 
 L'algorithme de recherche par profondeur est très inefficace. Un seul sudoku prend plusieurs heures pour terminer. En contrepartie, nous savons qu'il arrive à une solution éventuellement. Il n'y a donc évidemment aucun résultat pour la recherche par profondeur.
+
 L'algorithme best-first utilisé avec une heuristique priorisant les cases le moins de chiffres possibles en ne regardant que les cases remplies est aussi inefficace. Bien que le temps est, en théorie, meilleur, cela prend encore plusieurs heures pour arriver à une solution. Nous n'avons donc aucun résultat pour cet algorithme. Par contre, il aurait été possible d'améliorer l'heuristique en comptant le nombre de possibilités de manière plus exhaustive. Par exemple, en considérant les chiffres qui n'apparaissent qu'une fois dans une ligne, une colonne ou un carré, ou bien avec des techniques plus complexes : si l'union des chiffres possibles de n cases d'une ligne (ou d'une colonne ou d'un carré) est un ensemble de cardinal n, alors on peut éliminer ces possibilités dans les autres cases de la ligne (ou de la colonne ou du carré).
 
 Le Hill Climbing réussit à réduire le cout, mais n'est pas capable de trouver une solution finale valide. En effet, sur les 100 sudokus, aucun sudoku n'a été résolu. Le cout moyen est de 13.54 et l'algorithme parcourait en moyenne 17.22 noeuds avant d'arriver à la solution
 
-Pour le Recuit Simulé, la température suit une loi exponentielle, où la température initiale est de 80% et qui descend par un coefficient de 0.99 à chaque itération. Comme l'algorithme est très long, il a été décidé d'arrêter les itérations lorsque la température est descend en bas de 1%. Tout comme le Hill Climbing, il ne trouve pas de solution, mais donne de meilleures résultats, malgré un temps de calcul très long. En moyenne, le score s'approche de 10.58 et l'algorithme parcourt 437 noeuds. Notons que si on n'arrêtait pas l'algorithme prématurément, il est certain qu'il trouverait la solution, mais cela requiert beaucoup de temps de calcul.
+Pour le recuit simulé, la température suit une loi exponentielle, où la température initiale est de 80% et qui descend par un coefficient de 0.99 à chaque itération. Comme l'algorithme est très long, il a été décidé d'arrêter les itérations lorsque la température est descend en bas de 1%. Tout comme le Hill Climbing, il ne trouve pas de solution, mais donne de meilleures résultats, malgré un temps de calcul très long. En moyenne, le score s'approche de 10.58 et l'algorithme parcourt 437 noeuds. Notons que si on n'arrêtait pas l'algorithme prématurément, il est certain qu'il trouverait la solution, mais cela requiert beaucoup de temps de calcul.
